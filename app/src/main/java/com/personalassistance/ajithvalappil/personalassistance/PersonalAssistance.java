@@ -52,6 +52,7 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
     static List<String> items = new ArrayList<String>();
     static boolean processingComplete = false;
     static boolean isDevicesConnected = false;
+    static boolean containsDevicesConnected = false;
     Button connectBlu;
     RelativeLayout aMainLayout;
     RelativeLayout aBluListLayout;
@@ -281,6 +282,41 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
         mBluAdapter.setAdapter(mArrayAdapter);
         mBluAdapter.setChoiceMode(mBluAdapter.CHOICE_MODE_SINGLE);
 
+        try {
+            System.out.println("Starting.....");
+            Toast.makeText(this, "Starting...", Toast.LENGTH_SHORT).show();
+            aBluetoothController = new BluetoothController();
+            aBluetoothController.setProcessType("init");
+            System.out.println("init.....");
+            System.out.println("Thread started.....");
+            aBluetoothController.start();
+            System.out.println("wait for complete started.....");
+            Toast.makeText(this, "Waiting for devices...", Toast.LENGTH_SHORT).show();
+            aBluetoothController.join();
+            System.out.println("Complete.....");
+            System.out.println("aBluetoothController.isDeviceHasBluetooth() >>" + aBluetoothController.isDeviceHasBluetooth());
+            System.out.println("aBluetoothController.isDeviceBluetoothIsOn() >>" + aBluetoothController.isDeviceBluetoothIsOn());
+            if (aBluetoothController.isDeviceHasBluetooth()){
+                if (!aBluetoothController.isDeviceBluetoothIsOn()){
+                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                    btAdapter = aBluetoothController.getBtAdapter();
+                }else{
+                    btAdapter = aBluetoothController.getBtAdapter();
+                }
+                aBluetoothController = new BluetoothController();
+                aBluetoothController.setBtAdapter(btAdapter);
+                aBluetoothController.setHandler(handler);
+                aBluetoothController.setProcessType("getlist");
+                aBluetoothController.start();
+                System.out.println("wait for complete started.....");
+            }else{
+                Toast.makeText(this, "No bluetooth devices...", Toast.LENGTH_LONG).show();
+            }
+        }catch (Exception ee){
+            ee.printStackTrace();
+        }
+
         return true;
     }
 
@@ -323,37 +359,16 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
 
     public void openBluetoothList(View view){
         try {
-            System.out.println("Starting.....");
-            Toast.makeText(this, "Starting...", Toast.LENGTH_SHORT).show();
-            aBluetoothController = new BluetoothController();
-            aBluetoothController.setProcessType("init");
-            System.out.println("init.....");
-            System.out.println("Thread started.....");
-            aBluetoothController.start();
-            System.out.println("wait for complete started.....");
-            Toast.makeText(this, "Waiting for devices...", Toast.LENGTH_SHORT).show();
-            aBluetoothController.join();
-            System.out.println("Complete.....");
-            System.out.println("aBluetoothController.isDeviceHasBluetooth() >>" + aBluetoothController.isDeviceHasBluetooth());
-            System.out.println("aBluetoothController.isDeviceBluetoothIsOn() >>" + aBluetoothController.isDeviceBluetoothIsOn());
-            if (aBluetoothController.isDeviceHasBluetooth()){
-                if (!aBluetoothController.isDeviceBluetoothIsOn()){
-                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-                    btAdapter = aBluetoothController.getBtAdapter();
-                }else{
-                    btAdapter = aBluetoothController.getBtAdapter();
-                }
-                aBluetoothController = new BluetoothController();
-                aBluetoothController.setBtAdapter(btAdapter);
-                aBluetoothController.setHandler(handler);
-                aBluetoothController.setProcessType("getlist");
-                aBluetoothController.start();
-                System.out.println("wait for complete started.....");
+
+            if (containsDevicesConnected){
+                mBluAdapter.setAdapter(mArrayAdapter);
+                mBluAdapter.setVisibility(view.VISIBLE);
                 aMainLayout.setVisibility(view.INVISIBLE);
                 aBluListLayout.setVisibility(view.VISIBLE);
             }else{
-                Toast.makeText(this, "No bluetooth devices...", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "No paired bluetooth devices...", Toast.LENGTH_LONG).show();
+                aMainLayout.setVisibility(view.VISIBLE);
+                aBluListLayout.setVisibility(view.INVISIBLE);
             }
         }catch (Exception ee){
             ee.printStackTrace();

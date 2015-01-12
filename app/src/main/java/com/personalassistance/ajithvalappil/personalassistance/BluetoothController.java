@@ -81,6 +81,7 @@ public class BluetoothController extends Thread {
 
     public void getList(){
         hasProcessComplete = false;
+        PersonalAssistance.containsDevicesConnected = false;
         System.out.println("getList.....");
         Message msg = handler.obtainMessage();
         Bundle bundle = new Bundle();
@@ -89,6 +90,7 @@ public class BluetoothController extends Thread {
                 // Device does not support Bluetooth
                 System.out.println("Device does not support Bluetooth");
             }else {
+                PersonalAssistance.items.clear();
                 System.out.println("getList Bluetooth");
                 if (btAdapter.isEnabled()) {
                     Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
@@ -107,6 +109,7 @@ public class BluetoothController extends Thread {
             e.printStackTrace();
         }
         hasProcessComplete = true;
+        PersonalAssistance.containsDevicesConnected = true;
         int cnt = PersonalAssistance.items.size();
         bundle.putString("devicelist", String.valueOf(cnt));
         msg.setData(bundle);
