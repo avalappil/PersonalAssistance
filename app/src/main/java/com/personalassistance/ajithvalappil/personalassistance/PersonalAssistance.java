@@ -27,6 +27,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.content.DialogInterface;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+
 import android.os.Handler;
 import android.os.Message;
 import android.bluetooth.BluetoothAdapter;
@@ -175,24 +177,39 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
             if (faces.length == 0){
                 //System.out.println(" No Face Detected! ");
                 textView.setText("No Face Detected!");
-                xdata.setText("");
-                ydata.setText("");
+                xdata.setText("0");
+                ydata.setText("0");
             }else{
                 //System.out.println(String.valueOf(faces.length) + " Face Detected");
                 textView.setText(String.valueOf(faces.length) + " Face Detected");
                 String msg = "";
-                msg = "f:" + String.valueOf(faces.length) + ";";
-                System.out.println("msg: " + msg);
+                msg = "*f:" + String.valueOf(faces.length) + ";";
                 if (faces.length > 0) {
                     // We could see if there's more than one face and do something in that case. What though?
                     Rect rect = faces[0].rect;
-                    float x = (rect.left + rect.right)*0.5f;
-                    float y = (rect.top + rect.bottom)*0.5f;
+                    double x = 0.0;
+                    double y = 0.0;
+                    try {
+                        x = (rect.left + rect.right)*0.5;
+                        y = (rect.top + rect.bottom)*0.5;
+                    }catch(Exception e){
+                        e.printStackTrace();
+                        x = 0.0;
+                        y = 0.0;
+                    }
                     xdata.setText(String.valueOf(x));
                     ydata.setText(String.valueOf(y));
                     msg = msg.concat("x:" + String.valueOf(x) + ";");
                     msg = msg.concat("y:" + String.valueOf(y) + ";#");
-                    sendMessage(msg);
+                    System.out.println("msg: " + msg.split(";").length);
+                    if (msg!=null && !msg.equalsIgnoreCase("") && msg.indexOf("f:") >= 0 && msg.indexOf("x:") >= 0 && msg.indexOf("y:") >= 0 && msg.split(";").length == 4) {
+                        sendMessage(msg);
+                        try {
+                            Thread.sleep(20);
+                        }catch(Exception ee){
+                            ee.printStackTrace();
+                        }
+                    }
                     // If the face is on the left, turn left, if it's on the right, turn right.
                     // Speed is proportional to how far to the side of the image the face is.
                     // The coordinates we get from face detection are from -1000 to 1000.
