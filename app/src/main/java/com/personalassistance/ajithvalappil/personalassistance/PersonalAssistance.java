@@ -53,6 +53,7 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
     static boolean processingComplete = false;
     static boolean isDevicesConnected = false;
     Button connectBlu;
+    RelativeLayout aMainLayout;
     RelativeLayout aBluListLayout;
     BluetoothController aBluetoothController = new BluetoothController();
     public BluetoothAdapter btAdapter = null;
@@ -69,7 +70,6 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
             if (bundle.containsKey("devicelist")){
                 String cnt  = bundle.getString("devicelist");
                 System.out.println("No of devices.....>> " + cnt);
-
             }
 
             if (bundle.containsKey("connected")){
@@ -271,6 +271,16 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_personal_assistance, menu);
+
+        aMainLayout = (RelativeLayout)findViewById(R.id.background);
+        aBluListLayout = (RelativeLayout)findViewById(R.id.aBluListLayout);
+        connectBlu=(Button)findViewById(R.id.connect);
+
+        mBluAdapter = (ListView)findViewById(R.id.listView);
+        mArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, items);
+        mBluAdapter.setAdapter(mArrayAdapter);
+        mBluAdapter.setChoiceMode(mBluAdapter.CHOICE_MODE_SINGLE);
+
         return true;
     }
 
@@ -280,14 +290,6 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        aBluListLayout = (RelativeLayout)findViewById(R.id.aBluListLayout);
-        connectBlu=(Button)findViewById(R.id.connect);
-
-        mBluAdapter = (ListView)findViewById(R.id.listView);
-        mArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, items);
-        mBluAdapter.setAdapter(mArrayAdapter);
-        mBluAdapter.setChoiceMode(mBluAdapter.CHOICE_MODE_SINGLE);
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
@@ -323,6 +325,7 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
         try {
             System.out.println("Starting.....");
             Toast.makeText(this, "Starting...", Toast.LENGTH_SHORT).show();
+            aBluetoothController = new BluetoothController();
             aBluetoothController.setProcessType("init");
             System.out.println("init.....");
             System.out.println("Thread started.....");
@@ -347,6 +350,8 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                 aBluetoothController.setProcessType("getlist");
                 aBluetoothController.start();
                 System.out.println("wait for complete started.....");
+                aMainLayout.setVisibility(view.INVISIBLE);
+                aBluListLayout.setVisibility(view.VISIBLE);
             }else{
                 Toast.makeText(this, "No bluetooth devices...", Toast.LENGTH_LONG).show();
             }

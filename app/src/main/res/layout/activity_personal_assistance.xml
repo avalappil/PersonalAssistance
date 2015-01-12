@@ -15,6 +15,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:visibility="visible"
         android:background="#000000">
 
         <Button
@@ -127,8 +128,9 @@
 
         <ListView
             android:layout_width="fill_parent"
-            android:layout_height="200dp"
-            android:id="@+id/listView" />
+            android:layout_height="100dp"
+            android:id="@+id/listView"
+            android:visibility="invisible" />
     </RelativeLayout>
 
 </RelativeLayout>
