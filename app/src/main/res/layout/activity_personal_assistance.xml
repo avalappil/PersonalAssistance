@@ -114,8 +114,21 @@
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/textView"
             android:layout_toEndOf="@+id/textView"
-            android:layout_marginLeft="10dp" />
+            android:layout_marginLeft="10dp"
+            android:onClick="openBluetoothList" />
 
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/aBluListLayout"
+        android:visibility="invisible">
+
+        <ListView
+            android:layout_width="fill_parent"
+            android:layout_height="200dp"
+            android:id="@+id/listView" />
     </RelativeLayout>
 
 </RelativeLayout>

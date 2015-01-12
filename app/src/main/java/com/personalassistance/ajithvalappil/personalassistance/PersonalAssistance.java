@@ -29,10 +29,15 @@ import android.content.DialogInterface;
 import java.util.*;
 import android.os.Handler;
 import android.os.Message;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothSocket;
+import android.widget.*;
+import android.content.*;
 
 
 public class PersonalAssistance extends ActionBarActivity implements SurfaceHolder.Callback{
 
+    //Camera
     Camera camera;
     SurfaceView surfaceView;
     SurfaceHolder surfaceHolder;
@@ -48,11 +53,24 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
     static boolean processingComplete = false;
     static boolean isDevicesConnected = false;
     Button connectBlu;
+    RelativeLayout aBluListLayout;
+    BluetoothController aBluetoothController = new BluetoothController();
+    public BluetoothAdapter btAdapter = null;
+    public BluetoothSocket btSocket = null;
+    static final int REQUEST_ENABLE_BT = 0;
+    ArrayAdapter<String> mArrayAdapter;
+    ListView mBluAdapter;
 
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             Bundle bundle = msg.getData();
+
+            if (bundle.containsKey("devicelist")){
+                String cnt  = bundle.getString("devicelist");
+                System.out.println("No of devices.....>> " + cnt);
+
+            }
 
             if (bundle.containsKey("connected")){
                 String msgData  = bundle.getString("connected");
@@ -126,10 +144,10 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
         public void onFaceDetection(Face[] faces, Camera camera) {
 
             if (faces.length == 0){
-                System.out.println(" No Face Detected! ");
+                //System.out.println(" No Face Detected! ");
             }else{
-                System.out.println(String.valueOf(faces.length) + " Face Detected :) ");
-                textView.setText(String.valueOf(faces.length) + " Face Detected :) ");
+                //System.out.println(String.valueOf(faces.length) + " Face Detected");
+                textView.setText(String.valueOf(faces.length) + " Face Detected");
                 if (faces.length > 0) {
                     // We could see if there's more than one face and do something in that case. What though?
                     Rect rect = faces[0].rect;
@@ -167,7 +185,6 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                 imageFileOS.close();
 
                 System.out.println("Image saved: " + uriTarget.toString());
-
             } catch (FileNotFoundException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -263,6 +280,13 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        aBluListLayout = (RelativeLayout)findViewById(R.id.aBluListLayout);
+        connectBlu=(Button)findViewById(R.id.connect);
+
+        mBluAdapter = (ListView)findViewById(R.id.listView);
+        mArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, items);
+        mBluAdapter.setAdapter(mArrayAdapter);
+        mBluAdapter.setChoiceMode(mBluAdapter.CHOICE_MODE_SINGLE);
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
@@ -293,6 +317,42 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
         });
         AlertDialog alert=builder.create();
         alert.show();
+    }
+
+    public void openBluetoothList(View view){
+        try {
+            System.out.println("Starting.....");
+            Toast.makeText(this, "Starting...", Toast.LENGTH_SHORT).show();
+            aBluetoothController.setProcessType("init");
+            System.out.println("init.....");
+            System.out.println("Thread started.....");
+            aBluetoothController.start();
+            System.out.println("wait for complete started.....");
+            Toast.makeText(this, "Waiting for devices...", Toast.LENGTH_SHORT).show();
+            aBluetoothController.join();
+            System.out.println("Complete.....");
+            System.out.println("aBluetoothController.isDeviceHasBluetooth() >>" + aBluetoothController.isDeviceHasBluetooth());
+            System.out.println("aBluetoothController.isDeviceBluetoothIsOn() >>" + aBluetoothController.isDeviceBluetoothIsOn());
+            if (aBluetoothController.isDeviceHasBluetooth()){
+                if (!aBluetoothController.isDeviceBluetoothIsOn()){
+                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                    btAdapter = aBluetoothController.getBtAdapter();
+                }else{
+                    btAdapter = aBluetoothController.getBtAdapter();
+                }
+                aBluetoothController = new BluetoothController();
+                aBluetoothController.setBtAdapter(btAdapter);
+                aBluetoothController.setHandler(handler);
+                aBluetoothController.setProcessType("getlist");
+                aBluetoothController.start();
+                System.out.println("wait for complete started.....");
+            }else{
+                Toast.makeText(this, "No bluetooth devices...", Toast.LENGTH_LONG).show();
+            }
+        }catch (Exception ee){
+            ee.printStackTrace();
+        }
     }
 
 }

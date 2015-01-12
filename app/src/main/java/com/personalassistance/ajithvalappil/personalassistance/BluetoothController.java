@@ -82,6 +82,8 @@ public class BluetoothController extends Thread {
     public void getList(){
         hasProcessComplete = false;
         System.out.println("getList.....");
+        Message msg = handler.obtainMessage();
+        Bundle bundle = new Bundle();
         try{
             if (btAdapter == null) {
                 // Device does not support Bluetooth
@@ -105,6 +107,10 @@ public class BluetoothController extends Thread {
             e.printStackTrace();
         }
         hasProcessComplete = true;
+        int cnt = PersonalAssistance.items.size();
+        bundle.putString("devicelist", String.valueOf(cnt));
+        msg.setData(bundle);
+        handler.sendMessage(msg);
     }
 
     public void setUp(){
