@@ -33,6 +33,9 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothSocket;
 import android.widget.*;
 import android.content.*;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 
 
 public class PersonalAssistance extends ActionBarActivity implements SurfaceHolder.Callback{
@@ -66,6 +69,11 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
     public OutputStream outStream = null;
     public InputStream inStream = null;
 
+    //speech recoganization
+    private SpeechRecognizer mSpeechRecognizer;
+    private Intent mSpeechRecognizerIntent;
+    String message = "";
+
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -85,6 +93,7 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                     btSocket = aBluetoothController.getBtSocket();
                     outStream = aBluetoothController.getOutStream();
                     inStream = aBluetoothController.getInStream();
+                    sendWelcome();
                 }else if (msgData!=null && msgData.equalsIgnoreCase("Disconnected")){
                     connectBlu.setText("Connect");
                 }
@@ -98,6 +107,10 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
             }
         }
     };
+
+    public void sendWelcome() {
+        sendMessage("*Welcome!!!#");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +155,15 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
 
         connectBlu=(Button)findViewById(R.id.connect);
 
+        //speech
+        mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        SpeechRecognitionListener listener = new SpeechRecognitionListener();
+        mSpeechRecognizer.setRecognitionListener(listener);
+        mSpeechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,this.getPackageName());
+        mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+
     }
 
     FaceDetectionListener faceDetectionListener
@@ -152,19 +174,22 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
 
             if (faces.length == 0){
                 //System.out.println(" No Face Detected! ");
+                textView.setText("No Face Detected!");
+                xdata.setText("");
+                ydata.setText("");
             }else{
                 //System.out.println(String.valueOf(faces.length) + " Face Detected");
                 textView.setText(String.valueOf(faces.length) + " Face Detected");
+                String msg = "";
+                msg = "f:" + String.valueOf(faces.length) + ";";
+                System.out.println("msg: " + msg);
                 if (faces.length > 0) {
                     // We could see if there's more than one face and do something in that case. What though?
                     Rect rect = faces[0].rect;
                     float x = (rect.left + rect.right)*0.5f;
                     float y = (rect.top + rect.bottom)*0.5f;
-                    System.out.println("x: " + x + "y: " + y);
                     xdata.setText(String.valueOf(x));
                     ydata.setText(String.valueOf(y));
-                    String msg = "";
-                    msg = "noface:" + String.valueOf(faces.length) + ";";
                     msg = msg.concat("x:" + String.valueOf(x) + ";");
                     msg = msg.concat("y:" + String.valueOf(y) + ";#");
                     sendMessage(msg);
@@ -354,7 +379,20 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //if user pressed "yes", then he is allowed to exit from application
-                finish();
+            if (mSpeechRecognizer != null){
+                mSpeechRecognizer.stopListening();
+                mSpeechRecognizer.destroy();
+            }
+            try {
+                if (btSocket!=null)
+                    btSocket.close();
+                isDevicesConnected = false;
+            } catch (IOException e2) {
+                System.out.println("Fatal Error In onResume() and unable to close socket during connection failure" + e2.getMessage() + ".");
+                isDevicesConnected = false;
+            }
+            //finish();
+            System.exit(0);
             }
         });
         builder.setNegativeButton("No",new DialogInterface.OnClickListener() {
@@ -427,6 +465,7 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                     aBluetoothController.start();
                     aMainLayout.setVisibility(view.VISIBLE);
                     aBluListLayout.setVisibility(view.INVISIBLE);
+                    mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
                     Toast.makeText(this, "Connecting...", Toast.LENGTH_SHORT).show();
                 }else{
                     try {
@@ -454,18 +493,86 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
         aBluListLayout.setVisibility(view.INVISIBLE);
     }
 
-    public void sendMessage(String message){
-        byte[] msgBuffer = message.getBytes();
+    public void sendMessage(String messg){
+        byte[] msgBuffer = messg.getBytes();
         try {
             if (outStream!=null) {
+                System.out.println(messg);
                 outStream.write(msgBuffer);
-                Toast.makeText(this, "Sending: " + message, Toast.LENGTH_SHORT).show();
             }else{
-                Toast.makeText(this, "Please connect to a device...", Toast.LENGTH_SHORT).show();
+                System.out.println("Please connect to a device...");
             }
         } catch (IOException e) {
             System.out.println("In onResume() and an exception occurred during write: " + e.getMessage());
         }
+    }
+
+    protected class SpeechRecognitionListener implements RecognitionListener
+    {
+
+        @Override
+        public void onBeginningOfSpeech()
+        {
+            System.out.println("onBeginingOfSpeech");
+        }
+
+        @Override
+        public void onBufferReceived(byte[] buffer)
+        {
+
+        }
+
+        @Override
+        public void onEndOfSpeech()
+        {
+            System.out.println("onEndOfSpeech");
+        }
+
+        @Override
+        public void onError(int error)
+        {
+            mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+
+            //System.out.println("error = " + error);
+        }
+
+        @Override
+        public void onEvent(int eventType, Bundle params)
+        {
+
+        }
+
+        @Override
+        public void onPartialResults(Bundle partialResults)
+        {
+
+        }
+
+        @Override
+        public void onReadyForSpeech(Bundle params)
+        {
+            //System.out.println("onReadyForSpeech"); //$NON-NLS-1$
+        }
+
+        @Override
+        public void onResults(Bundle results)
+        {
+            //Log.d(TAG, "onResults"); //$NON-NLS-1$
+            ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+            if (matches.size()>=0) {
+                message = matches.get(0);
+                System.out.println("You: " + message );
+                sendMessage("*voice:" + message + "#");
+            }
+            mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+        }
+
+        @Override
+        public void onRmsChanged(float rmsdB)
+        {
+
+        }
+
     }
 
 }
