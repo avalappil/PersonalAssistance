@@ -86,7 +86,7 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                     outStream = aBluetoothController.getOutStream();
                     inStream = aBluetoothController.getInStream();
                 }else if (msgData!=null && msgData.equalsIgnoreCase("Disconnected")){
-                    connectBlu.setText("Connected");
+                    connectBlu.setText("Connect");
                 }
                 System.out.println("Complete.....");
             }
@@ -164,9 +164,9 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                     xdata.setText(String.valueOf(x));
                     ydata.setText(String.valueOf(y));
                     String msg = "";
-                    msg = "NumFaces:" + String.valueOf(faces.length) + "#";
-                    msg = msg.concat("x:" + String.valueOf(x) + "#");
-                    msg = msg.concat("y:" + String.valueOf(y) + "#");
+                    msg = "noface:" + String.valueOf(faces.length) + ";";
+                    msg = msg.concat("x:" + String.valueOf(x) + ";");
+                    msg = msg.concat("y:" + String.valueOf(y) + ";#");
                     sendMessage(msg);
                     // If the face is on the left, turn left, if it's on the right, turn right.
                     // Speed is proportional to how far to the side of the image the face is.
@@ -459,6 +459,7 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
         try {
             if (outStream!=null) {
                 outStream.write(msgBuffer);
+                Toast.makeText(this, "Sending: " + message, Toast.LENGTH_SHORT).show();
             }else{
                 Toast.makeText(this, "Please connect to a device...", Toast.LENGTH_SHORT).show();
             }
