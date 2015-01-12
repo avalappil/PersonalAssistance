@@ -4,48 +4,31 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.support.v7.app.ActionBarActivity;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.hardware.Camera;
 import android.hardware.Camera.Face;
 import android.app.AlertDialog;
 import android.view.SurfaceView;
 import android.graphics.Rect;
-import android.hardware.Camera;
-import android.hardware.Camera.Face;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.Surface;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
-import android.view.WindowManager;
 import java.io.*;
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.pm.ActivityInfo;
 import android.graphics.PixelFormat;
-import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
-import android.hardware.Camera.Face;
 import android.hardware.Camera.FaceDetectionListener;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.MediaStore.Images.Media;
 import android.view.LayoutInflater;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.content.DialogInterface;
+import java.util.*;
+import android.os.Handler;
+import android.os.Message;
 
 
 public class PersonalAssistance extends ActionBarActivity implements SurfaceHolder.Callback{
@@ -59,6 +42,37 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
     TextView textView;
     TextView xdata;
     TextView ydata;
+
+    //bluetooth
+    static List<String> items = new ArrayList<String>();
+    static boolean processingComplete = false;
+    static boolean isDevicesConnected = false;
+    Button connectBlu;
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Bundle bundle = msg.getData();
+
+            if (bundle.containsKey("connected")){
+                String msgData  = bundle.getString("connected");
+                System.out.println("Complete.....>> " + msgData);
+                Button connectBlu=(Button)findViewById(R.id.connect);
+                if (msgData!=null && msgData.equalsIgnoreCase("Connected")){
+                    connectBlu.setText("Disconnect");
+                }else if (msgData!=null && msgData.equalsIgnoreCase("Disconnected")){
+                    connectBlu.setText("Connect");
+                }
+                System.out.println("Complete.....");
+            }
+            if (bundle.containsKey("message")){
+                String msgData  = bundle.getString("message");
+                System.out.println("Complete.....>> " + msgData);
+                TextView voiceToText = (TextView)findViewById(R.id.textView);
+                voiceToText.append("Controller:" + msgData);
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +114,8 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                 buttonTakePicture.setEnabled(false);
                 camera.autoFocus(myAutoFocusCallback);
             }});
+
+        connectBlu=(Button)findViewById(R.id.connect);
 
     }
 
