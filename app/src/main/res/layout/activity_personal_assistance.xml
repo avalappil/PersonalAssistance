@@ -1,0 +1,109 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".PersonalAssistance"
+    android:background="#000000">
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/background"
+        android:weightSum="1"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:background="#000000">
+
+        <Button
+            android:layout_width="101dp"
+            android:layout_height="101dp"
+            android:text="Photo"
+            android:id="@+id/buttonTakePicture"
+            android:layout_gravity="center_horizontal"
+            android:onClick="openCamera"
+            android:background="#ff93272b"
+            android:textColor="#ffffffff"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/surfaceView"
+            android:layout_toEndOf="@+id/surfaceView"
+            android:layout_marginLeft="26dp"
+            android:layout_marginStart="26dp" />
+
+        <SurfaceView
+            android:layout_width="180dp"
+            android:layout_height="101dp"
+            android:id="@+id/surfaceView"
+            android:layout_weight="0.40"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/textView"
+            android:layout_below="@+id/surfaceView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="10dp"
+            android:layout_alignRight="@+id/buttonTakePicture"
+            android:layout_alignEnd="@+id/buttonTakePicture"
+            android:textColor="#FFFFFF"
+            android:paddingLeft="2dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="X: "
+            android:id="@+id/X"
+            android:textColor="#FFFFFF"
+            android:layout_below="@+id/textView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="2dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Y: "
+            android:id="@+id/textView2"
+            android:phoneNumber="false"
+            android:textColor="#FFFFFF"
+            android:layout_below="@+id/X"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="5dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/xdata"
+            android:layout_alignTop="@+id/X"
+            android:layout_toRightOf="@+id/X"
+            android:layout_toEndOf="@+id/X"
+            android:textColor="#FFFFFF"
+            android:singleLine="true"
+            android:layout_marginLeft="5dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/ydata"
+            android:textColor="#FFFFFF"
+            android:layout_alignTop="@+id/textView2"
+            android:layout_toRightOf="@+id/X"
+            android:layout_toEndOf="@+id/X"
+            android:layout_marginLeft="5dp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
