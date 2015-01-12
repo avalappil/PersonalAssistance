@@ -63,6 +63,8 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
     ArrayAdapter<String> mArrayAdapter;
     ListView mBluAdapter;
     public static String address = "88:C9:D0:94:DE:3F";
+    public OutputStream outStream = null;
+    public InputStream inStream = null;
 
     Handler handler = new Handler() {
         @Override
@@ -80,6 +82,9 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                 Button connectBlu=(Button)findViewById(R.id.connect);
                 if (msgData!=null && msgData.equalsIgnoreCase("Connected")){
                     connectBlu.setText("Disconnect");
+                    btSocket = aBluetoothController.getBtSocket();
+                    outStream = aBluetoothController.getOutStream();
+                    inStream = aBluetoothController.getInStream();
                 }else if (msgData!=null && msgData.equalsIgnoreCase("Disconnected")){
                     connectBlu.setText("Connected");
                 }
@@ -362,10 +367,24 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
         try {
 
             if (containsDevicesConnected){
-                mBluAdapter.setAdapter(mArrayAdapter);
-                mBluAdapter.setVisibility(view.VISIBLE);
-                aMainLayout.setVisibility(view.INVISIBLE);
-                aBluListLayout.setVisibility(view.VISIBLE);
+                if (isDevicesConnected){
+                    try {
+                        if (btSocket!=null)
+                            btSocket.close();
+                        isDevicesConnected = false;
+                    } catch (IOException e2) {
+                        System.out.println("Fatal Error In onResume() and unable to close socket during connection failure" + e2.getMessage() + ".");
+                        isDevicesConnected = false;
+                    }
+                    connectBlu.setText("Connect");
+                    aMainLayout.setVisibility(view.VISIBLE);
+                    aBluListLayout.setVisibility(view.INVISIBLE);
+                }else{
+                    mBluAdapter.setAdapter(mArrayAdapter);
+                    mBluAdapter.setVisibility(view.VISIBLE);
+                    aMainLayout.setVisibility(view.INVISIBLE);
+                    aBluListLayout.setVisibility(view.VISIBLE);
+                }
             }else{
                 Toast.makeText(this, "No paired bluetooth devices...", Toast.LENGTH_LONG).show();
                 aMainLayout.setVisibility(view.VISIBLE);
@@ -401,7 +420,6 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                     System.out.println("init.....");
                     System.out.println("Thread started.....");
                     aBluetoothController.start();
-                    //readVoiceFromText();
                     aMainLayout.setVisibility(view.VISIBLE);
                     aBluListLayout.setVisibility(view.INVISIBLE);
                     Toast.makeText(this, "Connecting...", Toast.LENGTH_SHORT).show();
@@ -424,4 +442,11 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
         }
 
     }
+
+    public void canList(View view){
+        connectBlu.setText("Connect");
+        aMainLayout.setVisibility(view.VISIBLE);
+        aBluListLayout.setVisibility(view.INVISIBLE);
+    }
+
 }
