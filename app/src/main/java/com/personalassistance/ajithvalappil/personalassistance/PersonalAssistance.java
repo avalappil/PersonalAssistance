@@ -62,6 +62,7 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
     static final int REQUEST_ENABLE_BT = 0;
     ArrayAdapter<String> mArrayAdapter;
     ListView mBluAdapter;
+    public static String address = "88:C9:D0:94:DE:3F";
 
     Handler handler = new Handler() {
         @Override
@@ -80,7 +81,7 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                 if (msgData!=null && msgData.equalsIgnoreCase("Connected")){
                     connectBlu.setText("Disconnect");
                 }else if (msgData!=null && msgData.equalsIgnoreCase("Disconnected")){
-                    connectBlu.setText("Connect");
+                    connectBlu.setText("Connected");
                 }
                 System.out.println("Complete.....");
             }
@@ -375,4 +376,52 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
         }
     }
 
+    public void connectlist(View view){
+
+        if (btAdapter!=null){
+            try {
+                int selectedIndex = mBluAdapter.getCheckedItemPosition();
+                String selectedDevice  = mArrayAdapter.getItem(selectedIndex);
+                if (selectedDevice!=null && selectedDevice.contains("\n")) {
+                    String data[] = selectedDevice.split("\n");
+                    String deviceName = "";
+                    String deviceAddress = "";
+                    if (data.length == 2) {
+                        deviceName = data[0];
+                        deviceAddress = data[1];
+                    }
+                    address = deviceAddress;
+                }
+                if (!isDevicesConnected){
+                    aBluetoothController = new BluetoothController();
+                    aBluetoothController.setBtAdapter(btAdapter);
+                    aBluetoothController.setProcessType("setup");
+                    aBluetoothController.setHandler(handler);
+                    aBluetoothController.address =  PersonalAssistance.address;
+                    System.out.println("init.....");
+                    System.out.println("Thread started.....");
+                    aBluetoothController.start();
+                    //readVoiceFromText();
+                    aMainLayout.setVisibility(view.VISIBLE);
+                    aBluListLayout.setVisibility(view.INVISIBLE);
+                    Toast.makeText(this, "Connecting...", Toast.LENGTH_SHORT).show();
+                }else{
+                    try {
+                        if (btSocket!=null)
+                            btSocket.close();
+                        isDevicesConnected = false;
+                    } catch (IOException e2) {
+                        System.out.println("Fatal Error In onResume() and unable to close socket during connection failure" + e2.getMessage() + ".");
+                        isDevicesConnected = false;
+                    }
+                    connectBlu.setText("Connect");
+                    aMainLayout.setVisibility(view.VISIBLE);
+                    aBluListLayout.setVisibility(view.INVISIBLE);
+                }
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+
+    }
 }
