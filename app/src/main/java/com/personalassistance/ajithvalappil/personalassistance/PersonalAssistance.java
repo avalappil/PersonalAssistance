@@ -163,6 +163,11 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                     System.out.println("x: " + x + "y: " + y);
                     xdata.setText(String.valueOf(x));
                     ydata.setText(String.valueOf(y));
+                    String msg = "";
+                    msg = "NumFaces:" + String.valueOf(faces.length) + "#";
+                    msg = msg.concat("x:" + String.valueOf(x) + "#");
+                    msg = msg.concat("y:" + String.valueOf(y) + "#");
+                    sendMessage(msg);
                     // If the face is on the left, turn left, if it's on the right, turn right.
                     // Speed is proportional to how far to the side of the image the face is.
                     // The coordinates we get from face detection are from -1000 to 1000.
@@ -447,6 +452,19 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
         connectBlu.setText("Connect");
         aMainLayout.setVisibility(view.VISIBLE);
         aBluListLayout.setVisibility(view.INVISIBLE);
+    }
+
+    public void sendMessage(String message){
+        byte[] msgBuffer = message.getBytes();
+        try {
+            if (outStream!=null) {
+                outStream.write(msgBuffer);
+            }else{
+                Toast.makeText(this, "Please connect to a device...", Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            System.out.println("In onResume() and an exception occurred during write: " + e.getMessage());
+        }
     }
 
 }
