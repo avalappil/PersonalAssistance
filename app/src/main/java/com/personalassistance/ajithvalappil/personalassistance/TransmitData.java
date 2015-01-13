@@ -16,7 +16,7 @@ public class TransmitData extends Thread{
         while(continueProcess){
 
             try{
-                Thread.sleep(1000);
+                Thread.sleep(10);
             }catch (InterruptedException  interruptedException){
                 System.out.println(  "First Thread is interrupted when it is  sleeping" +interruptedException);
             }
