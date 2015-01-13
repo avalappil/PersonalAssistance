@@ -76,6 +76,10 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
     private Intent mSpeechRecognizerIntent;
     String message = "";
 
+    //transmit faces
+    TransmitData aTransmitData = new TransmitData();
+    static String faceData = "";
+
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -96,7 +100,13 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                     outStream = aBluetoothController.getOutStream();
                     inStream = aBluetoothController.getInStream();
                     sendWelcome();
+                    aTransmitData.setContinueProcess(false);
+                    aTransmitData = new TransmitData();
+                    aTransmitData.setOutStream(outStream);
+                    aTransmitData.setContinueProcess(true);
+                    aTransmitData.start();
                 }else if (msgData!=null && msgData.equalsIgnoreCase("Disconnected")){
+                    aTransmitData.setContinueProcess(false);
                     connectBlu.setText("Connect");
                 }
                 System.out.println("Complete.....");
@@ -179,9 +189,11 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                 textView.setText("No Face Detected!");
                 xdata.setText("0");
                 ydata.setText("0");
+                faceData = "*f:0;x:0;y:0;#";
             }else{
                 //System.out.println(String.valueOf(faces.length) + " Face Detected");
                 textView.setText(String.valueOf(faces.length) + " Face Detected");
+                int numberOfFaces = faces.length;
                 String msg = "";
                 msg = "*f:" + String.valueOf(faces.length) + ";";
                 if (faces.length > 0) {
@@ -202,14 +214,13 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                     msg = msg.concat("x:" + String.valueOf(x) + ";");
                     msg = msg.concat("y:" + String.valueOf(y) + ";#");
                     System.out.println("msg: " + msg.split(";").length);
+
                     if (msg!=null && !msg.equalsIgnoreCase("") && msg.indexOf("f:") >= 0 && msg.indexOf("x:") >= 0 && msg.indexOf("y:") >= 0 && msg.split(";").length == 4) {
-                        sendMessage(msg);
-                        try {
-                            Thread.sleep(20);
-                        }catch(Exception ee){
-                            ee.printStackTrace();
-                        }
+                        //sendMessage(msg);
+                        faceData = "*f:" + numberOfFaces + ";x:" + x + ";y:" + y + ";#";
+                        System.out.println("msg: " + faceData);
                     }
+
                     // If the face is on the left, turn left, if it's on the right, turn right.
                     // Speed is proportional to how far to the side of the image the face is.
                     // The coordinates we get from face detection are from -1000 to 1000.
