@@ -198,26 +198,40 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                 msg = "*f:" + String.valueOf(faces.length) + ";";
                 if (faces.length > 0) {
                     // We could see if there's more than one face and do something in that case. What though?
+                    int maxw = 750;
+                    int maxh = 550;
                     Rect rect = faces[0].rect;
-                    double x = 0.0;
-                    double y = 0.0;
-                    try {
-                        x = (rect.left + rect.right)*0.5;
-                        y = (rect.top + rect.bottom)*0.5;
-                    }catch(Exception e){
-                        e.printStackTrace();
-                        x = 0.0;
-                        y = 0.0;
-                    }
-                    xdata.setText(String.valueOf(x));
-                    ydata.setText(String.valueOf(y));
-                    msg = msg.concat("x:" + String.valueOf(x) + ";");
-                    msg = msg.concat("y:" + String.valueOf(y) + ";#");
+                    float x = (rect.left + rect.right)*0.5f;
+                    float y = (rect.top + rect.bottom)*0.5f;
+                    System.out.println("x: " + x + "y: " + y);
+
+                    int tmpx = (int)x/10;
+                    tmpx = tmpx * 10;
+                    int xx = maxw + tmpx;
+
+                    if (xx<0) xx=0;
+                    if (xx>1500) xx = 1500;
+
+                    int tmpy = (int)y/10;
+                    tmpy = tmpy * 10;
+                    int yy = maxh + tmpy;
+
+                    if (yy<0) yy=0;
+                    if (yy>1000) yy = 1000;
+
+                    xx= ConvertRange(0,1500,10,170,xx);
+                    yy= ConvertRange(0,1000,10,170,yy);
+
+                    xdata.setText(String.valueOf(xx));
+                    ydata.setText(String.valueOf(yy));
+
+                    msg = msg.concat("x:" + String.valueOf(xx) + ";");
+                    msg = msg.concat("y:" + String.valueOf(yy) + ";#");
                     System.out.println("msg: " + msg.split(";").length);
 
                     if (msg!=null && !msg.equalsIgnoreCase("") && msg.indexOf("f:") >= 0 && msg.indexOf("x:") >= 0 && msg.indexOf("y:") >= 0 && msg.split(";").length == 4) {
                         //sendMessage(msg);
-                        faceData = "*f:" + numberOfFaces + ";x:" + x + ";y:" + y + ";#";
+                        faceData = "*f:" + numberOfFaces + ";x:" + xx + ";y:" + yy + ";#";
                         System.out.println("msg: " + faceData);
                     }
 
@@ -601,6 +615,15 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
 
         }
 
+    }
+
+    public int ConvertRange(
+            int originalStart, int originalEnd, // original range
+            int newStart, int newEnd, // desired range
+            int value) // value to convert
+    {
+        double scale = (double)(newEnd - newStart) / (originalEnd - originalStart);
+        return (int)(newStart + ((value - originalStart) * scale));
     }
 
 }
