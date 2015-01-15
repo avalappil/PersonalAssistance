@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.hardware.Camera;
+import android.hardware.Camera.Size;
 import android.hardware.Camera.Face;
 import android.app.AlertDialog;
 import android.view.SurfaceView;
@@ -203,7 +204,7 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                     Rect rect = faces[0].rect;
                     float x = (rect.left + rect.right)*0.5f;
                     float y = (rect.top + rect.bottom)*0.5f;
-                    System.out.println("x: " + x + "y: " + y);
+                    //System.out.println("x: " + x + "y: " + y);
 
                     int tmpx = (int)x/10;
                     tmpx = tmpx * 10;
@@ -219,20 +220,20 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                     if (yy<0) yy=0;
                     if (yy>1000) yy = 1000;
 
-                    xx= ConvertRange(0,1500,10,170,xx);
-                    yy= ConvertRange(0,1000,10,170,yy);
+                    xx= ConvertRange(0,1500,-200,200,xx);
+                    yy= ConvertRange(0,1000,-200,200,yy);
 
                     xdata.setText(String.valueOf(xx));
                     ydata.setText(String.valueOf(yy));
 
                     msg = msg.concat("x:" + String.valueOf(xx) + ";");
                     msg = msg.concat("y:" + String.valueOf(yy) + ";#");
-                    System.out.println("msg: " + msg.split(";").length);
+                    //System.out.println("msg: " + msg.split(";").length);
 
                     if (msg!=null && !msg.equalsIgnoreCase("") && msg.indexOf("f:") >= 0 && msg.indexOf("x:") >= 0 && msg.indexOf("y:") >= 0 && msg.split(";").length == 4) {
                         //sendMessage(msg);
                         faceData = "*f:" + numberOfFaces + ";x:" + xx + ";y:" + yy + ";#";
-                        System.out.println("msg: " + faceData);
+                        //System.out.println("msg: " + faceData);
                     }
 
                     // If the face is on the left, turn left, if it's on the right, turn right.
@@ -296,6 +297,9 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                 int zoom = 15;
                 System.out.println(String.valueOf( ">>>Max Face: " + camera.getParameters().getMaxNumDetectedFaces()));
                 Camera.Parameters parameters = camera.getParameters();
+                Size zsize = parameters.getPreviewSize();
+                System.out.println("height: " + zsize.height);
+                System.out.println("width: " + zsize.width);
                 int maxZoom = parameters.getMaxZoom();
                 System.out.println("maxZoom: " + maxZoom);
                 if (parameters.isZoomSupported()) {
