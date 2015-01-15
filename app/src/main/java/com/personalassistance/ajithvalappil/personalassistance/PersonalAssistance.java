@@ -80,6 +80,9 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
     //transmit faces
     TransmitData aTransmitData = new TransmitData();
     static String faceData = "";
+    static int numberOfFaces = 0;
+    static int centerX = 0;
+    static int centerY = 0;
 
     Handler handler = new Handler() {
         @Override
@@ -194,7 +197,7 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
             }else{
                 //System.out.println(String.valueOf(faces.length) + " Face Detected");
                 textView.setText(String.valueOf(faces.length) + " Face Detected");
-                int numberOfFaces = faces.length;
+                numberOfFaces = faces.length;
                 String msg = "";
                 msg = "*f:" + String.valueOf(faces.length) + ";";
                 if (faces.length > 0) {
@@ -226,8 +229,11 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                     xdata.setText(String.valueOf(xx));
                     ydata.setText(String.valueOf(yy));
 
-                    msg = msg.concat("x:" + String.valueOf(xx) + ";");
-                    msg = msg.concat("y:" + String.valueOf(yy) + ";#");
+                    centerX = xx;
+                    centerY = yy;
+
+                    msg = msg.concat("x:" + String.valueOf(centerX) + ";");
+                    msg = msg.concat("y:" + String.valueOf(centerY) + ";#");
                     //System.out.println("msg: " + msg.split(";").length);
 
                     if (msg!=null && !msg.equalsIgnoreCase("") && msg.indexOf("f:") >= 0 && msg.indexOf("x:") >= 0 && msg.indexOf("y:") >= 0 && msg.split(";").length == 4) {
@@ -618,7 +624,7 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
             if (matches.size()>=0) {
                 message = matches.get(0);
                 System.out.println("You: " + message );
-                sendMessage("*voice:" + message + "#");
+                //sendMessage("*voice:" + message + "#");
             }
             mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
         }

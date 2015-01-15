@@ -15,14 +15,19 @@ public class TransmitData extends Thread{
 
         while(continueProcess){
 
-            try{
+/*            try{
                 Thread.sleep(10);
             }catch (InterruptedException  interruptedException){
                 System.out.println(  "First Thread is interrupted when it is  sleeping" +interruptedException);
-            }
+            }*/
             //send the data to controller
-            sendMessage(PersonalAssistance.faceData);
-
+            //sendMessage(PersonalAssistance.faceData);
+            sendMessage("f");
+            sendMessage(String.valueOf(PersonalAssistance.numberOfFaces));
+            sendMessage("x");
+            sendMessage(String.valueOf(PersonalAssistance.centerX));
+            sendMessage("y");
+            sendMessage(String.valueOf(PersonalAssistance.centerY));
 
         }
     }
