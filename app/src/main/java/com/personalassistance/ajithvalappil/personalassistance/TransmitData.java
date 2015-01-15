@@ -25,9 +25,9 @@ public class TransmitData extends Thread{
             sendMessage("f");
             sendMessage(String.valueOf(PersonalAssistance.numberOfFaces));
             sendMessage("x");
-            sendMessage(String.valueOf(PersonalAssistance.centerX));
+            sendMessage(String.valueOf(PersonalAssistance.servoXPosition));
             sendMessage("y");
-            sendMessage(String.valueOf(PersonalAssistance.centerY));
+            sendMessage(String.valueOf(PersonalAssistance.servoYPosition));
 
         }
     }
@@ -36,7 +36,7 @@ public class TransmitData extends Thread{
         byte[] msgBuffer = messg.getBytes();
         try {
             if (outStream!=null) {
-                System.out.println(messg);
+                //System.out.println(messg);
                 outStream.write(msgBuffer);
             }else{
                 System.out.println("Please connect to a device...");

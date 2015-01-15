@@ -83,6 +83,8 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
     static int numberOfFaces = 0;
     static int centerX = 0;
     static int centerY = 0;
+    static int servoYPosition = 90;
+    static int servoXPosition = 90;
 
     Handler handler = new Handler() {
         @Override
@@ -232,15 +234,44 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                     centerX = xx;
                     centerY = yy;
 
-                    msg = msg.concat("x:" + String.valueOf(centerX) + ";");
-                    msg = msg.concat("y:" + String.valueOf(centerY) + ";#");
-                    //System.out.println("msg: " + msg.split(";").length);
+                    int midScreenX = 0;
+                    int midScreenY = 0;
+                    int midScreenWindow = 50;
 
-                    if (msg!=null && !msg.equalsIgnoreCase("") && msg.indexOf("f:") >= 0 && msg.indexOf("x:") >= 0 && msg.indexOf("y:") >= 0 && msg.split(";").length == 4) {
-                        //sendMessage(msg);
-                        faceData = "*f:" + numberOfFaces + ";x:" + xx + ";y:" + yy + ";#";
-                        //System.out.println("msg: " + faceData);
+                    int stepSize = 1;
+                    servoYPosition = 90;
+                    //servoXPosition = 90;
+
+                    //Find out if the X component of the face is to the left of the middle of the screen.
+                    if(centerX < (midScreenX - midScreenWindow)){
+                        if(servoXPosition >= 5){
+                            servoXPosition -= stepSize; //Update the pan position variable to move the servo to the left.
+                        }
                     }
+                    //Find out if the X component of the face is to the right of the middle of the screen.
+                    else if(centerX > (midScreenX + midScreenWindow)){
+                        if(servoXPosition <= 175){
+                            servoXPosition +=stepSize; //Update the pan position variable to move the servo to the right.
+                        }
+                    }
+
+                    //Find out if the Y component of the face is below the middle of the screen.
+                    if(centerY < (midScreenY - midScreenWindow)){
+                        if(servoYPosition >= 5){
+                            servoYPosition -= stepSize; //If it is below the middle of the screen, update the tilt position variable to lower the tilt servo.
+                        }
+                    }
+                    //Find out if the Y component of the face is above the middle of the screen.
+                    else if(centerY > (midScreenY + midScreenWindow)){
+                        if(servoYPosition <= 175){
+                            servoYPosition +=stepSize; //Update the tilt position variable to raise the tilt servo.
+                        }
+                    }
+
+                    xdata.setText(String.valueOf(centerX));
+                    ydata.setText(String.valueOf(centerY));
+
+                    System.out.println("servoXPosition: " + servoXPosition + "  servoYPosition: " + servoYPosition);
 
                     // If the face is on the left, turn left, if it's on the right, turn right.
                     // Speed is proportional to how far to the side of the image the face is.
