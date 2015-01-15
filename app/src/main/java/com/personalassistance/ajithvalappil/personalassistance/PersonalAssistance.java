@@ -293,9 +293,19 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
             try {
                 camera.setPreviewDisplay(surfaceHolder);
                 camera.startPreview();
-
-                System.out.println(String.valueOf(
-                        "Max Face: " + camera.getParameters().getMaxNumDetectedFaces()));
+                int zoom = 15;
+                System.out.println(String.valueOf( ">>>Max Face: " + camera.getParameters().getMaxNumDetectedFaces()));
+                Camera.Parameters parameters = camera.getParameters();
+                int maxZoom = parameters.getMaxZoom();
+                System.out.println("maxZoom: " + maxZoom);
+                if (parameters.isZoomSupported()) {
+                    if (zoom >=0 && zoom < maxZoom) {
+                        parameters.setZoom(zoom);
+                    } else {
+                        // zoom parameter is incorrect
+                    }
+                }
+                camera.setParameters(parameters);
                 camera.startFaceDetection();
                 previewing = true;
             } catch (IOException e) {
