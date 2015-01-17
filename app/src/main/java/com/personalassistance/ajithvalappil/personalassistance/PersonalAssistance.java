@@ -244,34 +244,30 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
 
                     //Find out if the X component of the face is to the left of the middle of the screen.
                     if(centerX < (midScreenX - midScreenWindow)){
-                        if(servoXPosition >= 5){
-                            servoXPosition -= stepSize; //Update the pan position variable to move the servo to the left.
-                        }
+                        servoXPosition = -1;
                     }
                     //Find out if the X component of the face is to the right of the middle of the screen.
                     else if(centerX > (midScreenX + midScreenWindow)){
-                        if(servoXPosition <= 175){
-                            servoXPosition +=stepSize; //Update the pan position variable to move the servo to the right.
-                        }
+                        servoXPosition = +1;
+                    }else{
+                        servoXPosition = 0;
                     }
 
                     //Find out if the Y component of the face is below the middle of the screen.
                     if(centerY < (midScreenY - midScreenWindow)){
-                        if(servoYPosition >= 5){
-                            servoYPosition -= stepSize; //If it is below the middle of the screen, update the tilt position variable to lower the tilt servo.
-                        }
+                        servoYPosition = -1;
                     }
                     //Find out if the Y component of the face is above the middle of the screen.
                     else if(centerY > (midScreenY + midScreenWindow)){
-                        if(servoYPosition <= 175){
-                            servoYPosition +=stepSize; //Update the tilt position variable to raise the tilt servo.
-                        }
+                        servoYPosition = +1;
+                    }else{
+                        servoYPosition = 0;
                     }
 
-                    xdata.setText(String.valueOf(centerX));
-                    ydata.setText(String.valueOf(centerY));
+                    xdata.setText(String.valueOf(servoXPosition));
+                    ydata.setText(String.valueOf(servoYPosition));
 
-                    System.out.println("servoXPosition: " + servoXPosition + "  servoYPosition: " + servoYPosition);
+                    //System.out.println("servoXPosition: " + servoXPosition + "  servoYPosition: " + servoYPosition);
 
                     // If the face is on the left, turn left, if it's on the right, turn right.
                     // Speed is proportional to how far to the side of the image the face is.
