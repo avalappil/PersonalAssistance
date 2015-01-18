@@ -196,7 +196,7 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                 xdata.setText("0");
                 ydata.setText("0");
                 faceData = "*f:0;x:0;y:0;#";
-
+                numberOfFaces = 0;
                 servoXPosition = 2;
                 servoYPosition = 2;
 

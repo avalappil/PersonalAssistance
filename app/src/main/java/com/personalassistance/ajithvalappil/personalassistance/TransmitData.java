@@ -29,7 +29,10 @@ public class TransmitData extends Thread{
                 sendMessage("5");
                 sendMessage(String.valueOf(PersonalAssistance.servoYPosition));
             }
-
+            if (PersonalAssistance.numberOfFaces != 0 ){
+                sendMessage("6");
+                sendMessage(String.valueOf(PersonalAssistance.numberOfFaces));
+            }
         }
     }
 
