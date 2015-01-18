@@ -196,6 +196,10 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
                 xdata.setText("0");
                 ydata.setText("0");
                 faceData = "*f:0;x:0;y:0;#";
+
+                servoXPosition = 2;
+                servoYPosition = 2;
+
             }else{
                 //System.out.println(String.valueOf(faces.length) + " Face Detected");
                 textView.setText(String.valueOf(faces.length) + " Face Detected");
@@ -244,24 +248,24 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
 
                     //Find out if the X component of the face is to the left of the middle of the screen.
                     if(centerX < (midScreenX - midScreenWindow)){
-                        servoXPosition = -1;
+                        servoXPosition = 1;
                     }
                     //Find out if the X component of the face is to the right of the middle of the screen.
                     else if(centerX > (midScreenX + midScreenWindow)){
-                        servoXPosition = +1;
+                        servoXPosition = 3;
                     }else{
-                        servoXPosition = 0;
+                        servoXPosition = 2;
                     }
 
                     //Find out if the Y component of the face is below the middle of the screen.
                     if(centerY < (midScreenY - midScreenWindow)){
-                        servoYPosition = -1;
+                        servoYPosition = 1;
                     }
                     //Find out if the Y component of the face is above the middle of the screen.
                     else if(centerY > (midScreenY + midScreenWindow)){
-                        servoYPosition = +1;
+                        servoYPosition = 3;
                     }else{
-                        servoYPosition = 0;
+                        servoYPosition = 2;
                     }
 
                     xdata.setText(String.valueOf(servoXPosition));

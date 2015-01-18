@@ -16,20 +16,17 @@ public class TransmitData extends Thread{
         while(continueProcess){
 
             try{
-                Thread.sleep(100);
+                Thread.sleep(10);
             }catch (InterruptedException  interruptedException){
                 System.out.println(  "First Thread is interrupted when it is  sleeping" +interruptedException);
             }
             //send the data to controller
-            //sendMessage(PersonalAssistance.faceData);
-            /*sendMessage("f");
-            sendMessage(String.valueOf(PersonalAssistance.numberOfFaces));
-            sendMessage("x");
-            sendMessage(String.valueOf(PersonalAssistance.servoXPosition));
-            sendMessage("y");
-            sendMessage(String.valueOf(PersonalAssistance.servoYPosition));*/
-            //sendMessage("f:3;x:0;y:0;");
-            sendMessage("*f:3;x:" + String.valueOf(PersonalAssistance.servoXPosition) + ";y:" + String.valueOf(PersonalAssistance.servoYPosition) + ";#");
+            if (PersonalAssistance.servoXPosition != 2 && PersonalAssistance.servoYPosition != 2 ){
+                sendMessage("4");
+                sendMessage(String.valueOf(PersonalAssistance.servoXPosition));
+                sendMessage("5");
+                sendMessage(String.valueOf(PersonalAssistance.servoYPosition));
+            }
 
         }
     }
@@ -40,6 +37,7 @@ public class TransmitData extends Thread{
             if (outStream!=null) {
                 System.out.println(messg);
                 outStream.write(msgBuffer);
+                outStream.flush();
             }else{
                 System.out.println("Please connect to a device...");
             }
