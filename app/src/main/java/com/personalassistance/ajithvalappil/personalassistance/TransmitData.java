@@ -21,9 +21,11 @@ public class TransmitData extends Thread{
                 System.out.println(  "First Thread is interrupted when it is  sleeping" +interruptedException);
             }
             //send the data to controller
-            if (PersonalAssistance.servoXPosition != 2 && PersonalAssistance.servoYPosition != 2 ){
+            if (PersonalAssistance.servoXPosition != 2){
                 sendMessage("4");
                 sendMessage(String.valueOf(PersonalAssistance.servoXPosition));
+            }
+            if (PersonalAssistance.servoYPosition != 2 ){
                 sendMessage("5");
                 sendMessage(String.valueOf(PersonalAssistance.servoYPosition));
             }
