@@ -331,7 +331,7 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
             try {
                 camera.setPreviewDisplay(surfaceHolder);
                 camera.startPreview();
-                int zoom = 15;
+                int zoom = 25;
                 System.out.println(String.valueOf( ">>>Max Face: " + camera.getParameters().getMaxNumDetectedFaces()));
                 Camera.Parameters parameters = camera.getParameters();
                 Size zsize = parameters.getPreviewSize();
