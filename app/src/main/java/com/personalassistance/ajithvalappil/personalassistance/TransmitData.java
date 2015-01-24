@@ -33,6 +33,11 @@ public class TransmitData extends Thread{
                 sendMessage("6");
                 sendMessage(String.valueOf(PersonalAssistance.numberOfFaces));
             }
+            if (PersonalAssistance.voiceCommands !=null && !PersonalAssistance.voiceCommands.equalsIgnoreCase("")){
+                sendMessage("7");
+                sendMessage("*" + PersonalAssistance.voiceCommands + "#");
+                PersonalAssistance.voiceCommands = "";
+            }
         }
     }
 

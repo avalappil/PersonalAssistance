@@ -85,6 +85,7 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
     static int centerY = 0;
     static int servoYPosition = 90;
     static int servoXPosition = 90;
+    static String voiceCommands = "";
 
     Handler handler = new Handler() {
         @Override
@@ -655,6 +656,7 @@ public class PersonalAssistance extends ActionBarActivity implements SurfaceHold
             if (matches.size()>=0) {
                 message = matches.get(0);
                 System.out.println("You: " + message );
+                voiceCommands = message;
                 //sendMessage("*voice:" + message + "#");
             }
             mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
